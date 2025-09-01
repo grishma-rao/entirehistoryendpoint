@@ -6,9 +6,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt, image } = req.body;
+    const { prompt, image, prompt_text, image_base64 } = req.body;
     
-    if (!prompt) {
+    // Support both parameter naming conventions
+    const finalPrompt = prompt || prompt_text;
+    const finalImage = image || image_base64;
+    
+    if (!finalPrompt) {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
@@ -20,18 +24,18 @@ export default async function handler(req, res) {
     const contents = [];
     
     // Add text prompt
-    contents.push({ text: prompt });
+    contents.push({ text: finalPrompt });
     
     // Add image if provided (base64 encoded)
-    if (image) {
+    if (finalImage) {
       // Remove data URL prefix if present (data:image/jpeg;base64,)
-      const base64Data = image.replace(/^data:image\/[a-z]+;base64,/, '');
+      const base64Data = finalImage.replace(/^data:image\/[a-z]+;base64,/, '');
       
       contents.push({
         inlineData: {
           data: base64Data,
-          mimeType: image.startsWith('data:') 
-            ? image.split(';')[0].split(':')[1] 
+          mimeType: finalImage.startsWith('data:') 
+            ? finalImage.split(';')[0].split(':')[1] 
             : 'image/jpeg'
         }
       });
