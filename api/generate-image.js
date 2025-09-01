@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -12,9 +12,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
-    const ai = new GoogleGenAI({ 
-      apiKey: process.env.GOOGLE_AI_API_KEY 
-    });
+    const ai = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
     // Build contents array - can include both text and image
     const contents = [];
@@ -37,10 +35,8 @@ export default async function handler(req, res) {
       });
     }
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image-preview",
-      contents: contents,
-    });
+    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash-image-preview" });
+    const response = await model.generateContent(contents);
 
     for (const part of response.candidates[0].content.parts) {
       if (part.inlineData) {
