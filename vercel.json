@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/generate-image.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}
