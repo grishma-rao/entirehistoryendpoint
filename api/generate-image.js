@@ -6,11 +6,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt, image, prompt_text, image_base64 } = req.body;
+    const { prompt, image, prompt_text, image_base64, model } = req.body;
     
     // Support both parameter naming conventions
     const finalPrompt = prompt || prompt_text;
     const finalImage = image || image_base64;
+    const finalModel = model || "gemini-2.5-flash-image-preview";
     
     if (!finalPrompt) {
       return res.status(400).json({ error: 'Prompt is required' });
@@ -42,7 +43,7 @@ export default async function handler(req, res) {
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image-preview",
+      model: finalModel,
       contents: contents,
     });
 
